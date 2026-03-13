@@ -5,7 +5,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { Product, Category } from '../types';
 import { PRODUCTS as DEFAULT_PRODUCTS, CATEGORIES as DEFAULT_CATEGORIES } from '../constants';
 import * as Icons from 'lucide-react';
-import { Plus, Edit2, Trash2, LogOut, Shield, Package, Tag, Image as ImageIcon, DollarSign, X, Check, Database, Layers, LayoutGrid, RefreshCw } from 'lucide-react';
+import { Plus, Edit2, Trash2, LogOut, Shield, Package, Tag, Image as ImageIcon, DollarSign, X, Check, Database, Layers, LayoutGrid, RefreshCw, Upload } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 enum OperationType {
@@ -91,6 +91,72 @@ export const AdminPanel = () => {
     order: '0',
     type: 'hardware' as Category['type']
   });
+
+  const [isDragging, setIsDragging] = useState(false);
+
+  const processImageFile = (file: File) => {
+    if (!file.type.startsWith('image/')) return;
+    
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 800;
+        const MAX_HEIGHT = 800;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0, width, height);
+        
+        const dataUrl = canvas.toDataURL('image/webp', 0.8);
+        setFormData(prev => ({ ...prev, image: dataUrl }));
+      };
+      img.src = event.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      processImageFile(file);
+    }
+  };
+
+  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      processImageFile(file);
+    }
+  };
 
   const AVAILABLE_ICONS = [
     'Laptop', 'Mouse', 'Wifi', 'HardDrive', 'Smartphone', 'Monitor', 'Cpu', 'Headphones', 
@@ -632,16 +698,43 @@ export const AdminPanel = () => {
 
                   <div className="space-y-2">
                     <label className="text-sm font-bold text-gray-700 dark:text-gray-300 flex items-center gap-2">
-                      <ImageIcon className="w-4 h-4" /> Image URL
+                      <ImageIcon className="w-4 h-4" /> Image du Produit
                     </label>
-                    <input
-                      type="url"
-                      required
-                      value={formData.image}
-                      onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                      className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-600 dark:text-white transition-all"
-                      placeholder="https://images.unsplash.com/..."
-                    />
+                    <div
+                      onDragOver={handleDragOver}
+                      onDragLeave={handleDragLeave}
+                      onDrop={handleDrop}
+                      className={`relative w-full h-32 border-2 border-dashed rounded-xl flex flex-col items-center justify-center overflow-hidden transition-colors cursor-pointer ${
+                        isDragging 
+                          ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' 
+                          : 'border-gray-300 dark:border-gray-600 hover:border-indigo-400 dark:hover:border-indigo-500 bg-gray-50 dark:bg-gray-900'
+                      }`}
+                      onClick={() => document.getElementById('image-upload')?.click()}
+                    >
+                      {formData.image ? (
+                        <>
+                          <img src={formData.image} alt="Aperçu" className="absolute inset-0 w-full h-full object-cover opacity-50" />
+                          <div className="relative z-10 flex flex-col items-center bg-white/80 dark:bg-gray-900/80 p-2 rounded-lg backdrop-blur-sm">
+                            <Upload className="w-6 h-6 text-indigo-600 dark:text-indigo-400 mb-1" />
+                            <span className="text-xs font-bold text-gray-700 dark:text-gray-300">Changer l'image</span>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <Upload className={`w-8 h-8 mb-2 ${isDragging ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-400'}`} />
+                          <span className="text-sm text-gray-500 dark:text-gray-400 text-center px-4">
+                            Glissez-déposez ou <span className="text-indigo-600 dark:text-indigo-400 font-bold">parcourez</span>
+                          </span>
+                        </>
+                      )}
+                      <input
+                        id="image-upload"
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleFileInput}
+                      />
+                    </div>
                   </div>
 
                   <div className="space-y-2 md:col-span-2">

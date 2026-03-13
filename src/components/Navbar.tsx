@@ -8,7 +8,7 @@ export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const { user, login, logout, cart, cartCount, cartTotal, updateQuantity, removeFromCart, searchQuery, setSearchQuery, isDarkMode, toggleDarkMode } = useStore();
+  const { user, login, logout, cart, cartCount, cartTotal, updateQuantity, removeFromCart, clearCart, searchQuery, setSearchQuery, isDarkMode, toggleDarkMode } = useStore();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -216,88 +216,112 @@ export const Navbar = () => {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed top-0 right-0 bottom-0 w-full max-w-md bg-white z-[70] shadow-2xl flex flex-col"
+              className="fixed top-0 right-0 bottom-0 w-full max-w-md bg-white dark:bg-gray-900 z-[70] shadow-2xl flex flex-col"
             >
-              <div className="p-6 border-b border-gray-100 flex items-center justify-between">
+              <div className="p-6 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="bg-indigo-50 p-2 rounded-xl">
-                    <ShoppingCart className="w-6 h-6 text-indigo-600" />
+                  <div className="bg-indigo-50 dark:bg-indigo-900/30 p-2 rounded-xl">
+                    <ShoppingCart className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
                   </div>
-                  <h2 className="text-xl font-black text-gray-900">Votre Panier</h2>
+                  <h2 className="text-xl font-black text-gray-900 dark:text-white">Votre Panier</h2>
                 </div>
-                <button 
-                  onClick={() => setIsCartOpen(false)}
-                  className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
-                >
-                  <X className="w-6 h-6 text-gray-400" />
-                </button>
+                <div className="flex items-center gap-2">
+                  {cart.length > 0 && (
+                    <button 
+                      onClick={clearCart}
+                      className="text-sm font-bold text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300 px-3 py-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                    >
+                      Vider
+                    </button>
+                  )}
+                  <button 
+                    onClick={() => setIsCartOpen(false)}
+                    className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors"
+                  >
+                    <X className="w-6 h-6 text-gray-400 dark:text-gray-500" />
+                  </button>
+                </div>
               </div>
 
-              <div className="flex-1 overflow-y-auto p-6 space-y-6">
+              <div className="flex-1 overflow-y-auto p-6 space-y-4">
                 {cart.length === 0 ? (
                   <div className="h-full flex flex-col items-center justify-center text-center">
-                    <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6">
-                      <ShoppingCart className="w-10 h-10 text-gray-300" />
+                    <div className="w-24 h-24 bg-gray-50 dark:bg-gray-800 rounded-full flex items-center justify-center mb-6">
+                      <ShoppingCart className="w-12 h-12 text-gray-300 dark:text-gray-600" />
                     </div>
-                    <h3 className="text-lg font-bold text-gray-900 mb-2">Votre panier est vide</h3>
-                    <p className="text-gray-500 mb-8">Découvrez nos produits et commencez vos achats.</p>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Votre panier est vide</h3>
+                    <p className="text-gray-500 dark:text-gray-400 mb-8 max-w-[250px]">Découvrez nos produits et commencez vos achats dès maintenant.</p>
                     <button 
                       onClick={() => setIsCartOpen(false)}
-                      className="bg-indigo-600 text-white px-8 py-3 rounded-2xl font-bold hover:bg-indigo-700 transition-colors"
+                      className="bg-indigo-600 text-white px-8 py-4 rounded-2xl font-bold hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-200 dark:shadow-none"
                     >
                       Continuer mes achats
                     </button>
                   </div>
                 ) : (
-                  cart.map((item) => (
-                    <div key={item.id} className="flex gap-4">
-                      <div className="w-24 h-24 bg-gray-100 rounded-2xl overflow-hidden flex-shrink-0">
-                        <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-bold text-gray-900 truncate mb-1">{item.name}</h4>
-                        <p className="text-indigo-600 font-black mb-3">{item.price.toLocaleString()} FCFA</p>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center bg-gray-50 rounded-lg p-1">
+                  <AnimatePresence initial={false}>
+                    {cart.map((item) => (
+                      <motion.div 
+                        key={item.id} 
+                        layout
+                        initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95, x: -20 }}
+                        className="flex gap-4 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-800 group"
+                      >
+                        <div className="w-24 h-24 bg-white dark:bg-gray-800 rounded-xl overflow-hidden flex-shrink-0 border border-gray-100 dark:border-gray-700">
+                          <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                        </div>
+                        <div className="flex-1 min-w-0 flex flex-col justify-between">
+                          <div>
+                            <h4 className="font-bold text-gray-900 dark:text-white truncate mb-1">{item.name}</h4>
+                            <p className="text-indigo-600 dark:text-indigo-400 font-black">{item.price.toLocaleString()} FCFA</p>
+                          </div>
+                          <div className="flex items-center justify-between mt-3">
+                            <div className="flex items-center bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-1 shadow-sm">
+                              <button 
+                                onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                disabled={item.quantity <= 1}
+                                className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                              >
+                                <Minus className="w-3.5 h-3.5 text-gray-600 dark:text-gray-400" />
+                              </button>
+                              <span className="w-8 text-center text-sm font-bold text-gray-900 dark:text-white">{item.quantity}</span>
+                              <button 
+                                onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
+                              >
+                                <Plus className="w-3.5 h-3.5 text-gray-600 dark:text-gray-400" />
+                              </button>
+                            </div>
                             <button 
-                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                              className="p-1 hover:bg-white rounded-md transition-colors"
+                              onClick={() => removeFromCart(item.id)}
+                              className="text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 p-2 rounded-lg transition-colors"
+                              title="Retirer du panier"
                             >
-                              <Minus className="w-4 h-4 text-gray-500" />
-                            </button>
-                            <span className="w-8 text-center text-sm font-bold text-gray-700">{item.quantity}</span>
-                            <button 
-                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                              className="p-1 hover:bg-white rounded-md transition-colors"
-                            >
-                              <Plus className="w-4 h-4 text-gray-500" />
+                              <Trash2 className="w-4 h-4" />
                             </button>
                           </div>
-                          <button 
-                            onClick={() => removeFromCart(item.id)}
-                            className="text-red-500 hover:text-red-600 p-2"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
                         </div>
-                      </div>
-                    </div>
-                  ))
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
                 )}
               </div>
 
               {cart.length > 0 && (
-                <div className="p-6 border-t border-gray-100 bg-gray-50/50">
+                <div className="p-6 border-t border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50 backdrop-blur-md">
                   <div className="flex items-center justify-between mb-6">
-                    <span className="text-gray-500 font-medium">Total</span>
-                    <span className="text-2xl font-black text-gray-900">{cartTotal.toLocaleString()} FCFA</span>
+                    <span className="text-gray-500 dark:text-gray-400 font-medium text-lg">Total</span>
+                    <span className="text-3xl font-black text-gray-900 dark:text-white">{cartTotal.toLocaleString()} FCFA</span>
                   </div>
                   <Link 
                     to="/checkout"
                     onClick={() => setIsCartOpen(false)}
-                    className="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold hover:bg-indigo-700 transition-colors shadow-xl shadow-indigo-100 flex items-center justify-center"
+                    className="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold text-lg hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-200 dark:shadow-none flex items-center justify-center gap-2 group"
                   >
                     Passer la commande
+                    <ShoppingCart className="w-5 h-5 group-hover:scale-110 transition-transform" />
                   </Link>
                 </div>
               )}

@@ -1,24 +1,9 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import { ArrowRight, ShieldCheck, Truck, Clock } from 'lucide-react';
 
-const HERO_IMAGES = [
-  "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80&w=800&h=1000",
-  "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&q=80&w=800&h=1000",
-  "https://images.unsplash.com/photo-1587202372634-32705e3bf49c?auto=format&fit=crop&q=80&w=800&h=1000",
-  "https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?auto=format&fit=crop&q=80&w=800&h=1000"
-];
+const HERO_IMAGE = "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80&w=800&h=1000";
 
 export const Hero = () => {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentImageIndex((prev) => (prev + 1) % HERO_IMAGES.length);
-    }, 4000);
-    return () => clearInterval(interval);
-  }, []);
-
   return (
     <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
       {/* Background Elements */}
@@ -82,19 +67,15 @@ export const Hero = () => {
             className="relative"
           >
             <div className="relative z-10 rounded-3xl overflow-hidden shadow-2xl shadow-indigo-200 dark:shadow-indigo-900/20 aspect-[4/5] bg-gray-100 dark:bg-gray-800">
-              <AnimatePresence mode="wait">
-                <motion.img
-                  key={currentImageIndex}
-                  src={HERO_IMAGES[currentImageIndex]}
-                  alt="Matériel Informatique de Haute Technologie"
-                  className="absolute inset-0 w-full h-full object-cover"
-                  referrerPolicy="no-referrer"
-                  initial={{ opacity: 0, scale: 1.05 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.8 }}
-                />
-              </AnimatePresence>
+              <motion.img
+                src={HERO_IMAGE}
+                alt="Matériel Informatique de Haute Technologie"
+                className="absolute inset-0 w-full h-full object-cover"
+                referrerPolicy="no-referrer"
+                initial={{ opacity: 0, scale: 1.05 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8 }}
+              />
             </div>
             {/* Floating Card */}
             <motion.div

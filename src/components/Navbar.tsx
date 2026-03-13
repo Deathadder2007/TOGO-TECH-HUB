@@ -44,6 +44,9 @@ export const Navbar = () => {
             <Link to="/" className="text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium transition-colors">Accueil</Link>
             <a href="#categories" className="text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium transition-colors">Catégories</a>
             <a href="#products" className="text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium transition-colors">Produits</a>
+            <Link to="/admin" className="text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium transition-colors flex items-center gap-1">
+              <Shield className="w-4 h-4" /> Admin
+            </Link>
           </div>
 
           <div className="hidden md:flex items-center gap-4">
@@ -172,6 +175,9 @@ export const Navbar = () => {
               <Link to="/" onClick={() => setIsOpen(false)} className="block px-4 py-3 text-gray-600 font-medium hover:bg-indigo-50 rounded-xl">Accueil</Link>
               <a href="#categories" onClick={() => setIsOpen(false)} className="block px-4 py-3 text-gray-600 font-medium hover:bg-indigo-50 rounded-xl">Catégories</a>
               <a href="#products" onClick={() => setIsOpen(false)} className="block px-4 py-3 text-gray-600 font-medium hover:bg-indigo-50 rounded-xl">Produits</a>
+              <Link to="/admin" onClick={() => setIsOpen(false)} className="block px-4 py-3 text-gray-600 font-medium hover:bg-indigo-50 rounded-xl flex items-center gap-2">
+                <Shield className="w-5 h-5" /> Administration
+              </Link>
               
               {user ? (
                 <div className="flex items-center justify-between px-4 py-3 bg-gray-50 rounded-xl">

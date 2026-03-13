@@ -1,0 +1,80 @@
+{
+  "entities": {
+    "Product": {
+      "title": "Product",
+      "description": "A product sold in the Togo Tech Hub shop",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of the product"
+        },
+        "price": {
+          "type": "number",
+          "description": "The price of the product in FCFA"
+        },
+        "category": {
+          "type": "string",
+          "description": "The category ID of the product"
+        },
+        "image": {
+          "type": "string",
+          "description": "The URL of the product image"
+        },
+        "description": {
+          "type": "string",
+          "description": "A brief description of the product"
+        },
+        "badge": {
+          "type": "string",
+          "description": "An optional badge like 'Nouveau' or 'Populaire'"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the product was added"
+        }
+      },
+      "required": ["name", "price", "category", "image"]
+    },
+    "Category": {
+      "title": "Category",
+      "description": "A product category",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The display name of the category"
+        },
+        "icon": {
+          "type": "string",
+          "description": "The Lucide icon name for the category"
+        },
+        "description": {
+          "type": "string",
+          "description": "A brief description of the category"
+        },
+        "order": {
+          "type": "number",
+          "description": "Display order"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["hardware", "software", "service", "other"],
+          "description": "The type of category"
+        }
+      },
+      "required": ["name", "icon"]
+    }
+  },
+  "firestore": {
+    "/products": {
+      "schema": "Product",
+      "description": "Collection of products available in the shop"
+    },
+    "/categories": {
+      "schema": "Category",
+      "description": "Collection of product categories"
+    }
+  }
+}
